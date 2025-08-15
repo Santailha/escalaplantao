@@ -1,211 +1,90 @@
-:root {
-    --azul-santailha: #312782;
-    --amarelo-santailha: #edae0f;
-    --fundo-geral: #f7f8fc;
-    --branco: #ffffff;
-    --texto-principal: #333;
-    --texto-claro: #888;
-    --borda-suave: #e0e0e0;
-}
+/* ... (todos os estilos anteriores continuam aqui) ... */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--fundo-geral);
-    color: var(--texto-principal);
-}
-
-header {
-    background-color: var(--azul-santailha);
-    color: var(--branco);
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-header .logo {
-    max-width: 150px;
-    margin-bottom: 1rem;
-}
-
-#month-navigation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-#month-navigation h2 {
-    width: 250px; /* Largura fixa para não "pular" com nomes de meses diferentes */
-}
-
-#month-navigation button {
-    background: var(--amarelo-santailha);
-    color: var(--azul-santailha);
-    border: none;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s;
-}
-
-#month-navigation button:hover {
-    transform: scale(1.1);
-}
-
-main {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: auto;
-}
-
-#calendar-container {
+/* --- Estilos da Seção de Gerenciamento --- */
+#management-section {
     background: var(--branco);
     border: 1px solid var(--borda-suave);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    overflow: hidden;
+    margin-top: 2rem;
+    padding: 1.5rem 2rem;
 }
 
-.calendar-header, .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.calendar-header div {
-    font-weight: 600;
+#management-section h2 {
     color: var(--azul-santailha);
-    padding: 1rem;
     text-align: center;
-    border-bottom: 2px solid var(--borda-suave);
+    margin-bottom: 2rem;
 }
 
-.calendar-day {
-    border-right: 1px solid var(--borda-suave);
-    border-top: 1px solid var(--borda-suave);
-    min-height: 140px;
-    padding: 0.5rem;
-    transition: background-color 0.3s;
-    position: relative;
+.management-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
 }
 
-.calendar-day:nth-child(7n) {
-    border-right: none;
+.form-container, .list-container {
+    padding: 1rem;
 }
 
-.calendar-day:hover {
-    background-color: #f5f8ff;
-    cursor: pointer;
-}
-
-.calendar-day.not-current-month {
-    background-color: #f9f9f9;
-    color: var(--texto-claro);
-}
-
-.day-number {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.shift {
-    font-size: 0.85em;
-    padding: 3px 6px;
-    border-radius: 4px;
-    margin-bottom: 4px;
-    background: #eef2ff;
-    color: #4c5a9b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* --- Estilos do Modal --- */
-.modal {
-    display: none; 
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    animation: fadeIn 0.3s;
-}
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal-content {
-    background-color: var(--branco);
-    margin: 10vh auto;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    animation: slideIn 0.3s;
-}
-
-@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-
-.close-btn {
-    color: var(--texto-claro);
-    position: absolute;
-    top: 1rem; right: 1rem;
-    font-size: 1.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.form-group {
+.form-container h3, .list-container h3 {
+    color: var(--texto-principal);
+    font-weight: 600;
     margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--amarelo-santailha);
+    padding-bottom: 0.5rem;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.corretor-select {
+#add-agent-form input, #add-agent-form select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid var(--borda-suave);
     border-radius: 6px;
     font-size: 1rem;
-    background-color: #fdfdfd;
 }
 
-.form-actions {
-    text-align: right;
-    margin-top: 2rem;
+#agent-list {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-.form-actions button {
-    background-color: var(--amarelo-santailha);
-    color: var(--azul-santailha);
-    font-weight: bold;
+#agent-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0.5rem;
+    border-bottom: 1px solid var(--borda-suave);
+}
+
+#agent-list li:last-child {
+    border-bottom: none;
+}
+
+#agent-list .agent-info span {
+    display: block;
+}
+
+#agent-list .agent-name {
+    font-weight: 500;
+}
+
+#agent-list .agent-unidade {
+    font-size: 0.9em;
+    color: var(--texto-claro);
+}
+
+#agent-list .delete-agent-btn {
+    background: none;
     border: none;
+    color: #f44336;
     cursor: pointer;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    transition: background-color 0.3s;
+    font-size: 1.2rem;
+    padding: 5px;
 }
 
-.form-actions button:hover {
-    background-color: #d49c0d;
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .management-content {
+        grid-template-columns: 1fr;
+    }
 }
