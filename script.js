@@ -1,91 +1,180 @@
-// Cole aqui as suas credenciais do Firebase que você copiou
+// --- CONFIGURAÇÃO DO FIREBASE (igual ao anterior) ---
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_AUTH_DOMAIN",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_STORAGE_BUCKET",
-  messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-  appId: "SEU_APP_ID"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    // ...resto das suas credenciais
 };
-
-// Inicializa o Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Referências do DOM
-const addAgentForm = document.getElementById('add-agent-form');
-const agentList = document.getElementById('agent-list');
+// --- VARIÁVEIS GLOBAIS ---
+const calendarGrid = document.getElementById('calendar-grid');
+const currentMonthYearEl = document.getElementById('current-month-year');
+const prevMonthBtn = document.getElementById('prev-month-btn');
+const nextMonthBtn = document.getElementById('next-month-btn');
+const modal = document.getElementById('edit-modal');
+const closeModalBtn = document.querySelector('.close-btn');
+const editScaleForm = document.getElementById('edit-scale-form');
 
-// --- LÓGICA DE GERENCIAMENTO DE CORRETORES ---
+let currentDate = new Date(); // Começa com a data atual
+let corretoresCache = {}; // Cache para não buscar corretores toda hora
 
-// Adicionar um novo corretor
-addAgentForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// --- FUNÇÕES PRINCIPAIS ---
 
-    const name = document.getElementById('agent-name').value;
-    const email = document.getElementById('agent-email').value;
-    const idBitrix = document.getElementById('agent-id-bitrix').value;
-    const unidade = document.getElementById('agent-unidade').value;
+// 1. Renderiza o Calendário
+async function renderCalendar() {
+    calendarGrid.innerHTML = ''; // Limpa o grid
+    currentDate.setDate(1); // Vai para o primeiro dia do mês
+
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
     
-    db.collection('corretores').add({
-        nome: name,
-        email: email,
-        idBitrix: parseInt(idBitrix), // Converte para número
-        unidade: unidade
-    })
-    .then(() => {
-        console.log("Corretor adicionado com sucesso!");
-        addAgentForm.reset();
-    })
-    .catch((error) => {
-        console.error("Erro ao adicionar corretor: ", error);
-    });
-});
+    currentMonthYearEl.textContent = `${currentDate.toLocaleString('pt-BR', { month: 'long' })} ${year}`;
 
-// Exibir a lista de corretores
-// A função onSnapshot fica "ouvindo" em tempo real as mudanças na coleção
-db.collection('corretores').onSnapshot(snapshot => {
-    let html = '';
-    snapshot.docs.forEach(doc => {
-        const corretor = doc.data();
-        html += `
-            <li>
-                <span>${corretor.nome} (${corretor.unidade})</span>
-                <button onclick="deleteAgent('${doc.id}')">Excluir</button>
-            </li>
+    const firstDayIndex = currentDate.getDay();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const prevLastDay = new Date(year, month, 0).getDate();
+
+    // Busca os dados da escala para o mês atual
+    const escalaDoMes = await getEscalaDoMes(year, month);
+    
+    // Preenche os dias do mês anterior
+    for (let i = firstDayIndex; i > 0; i--) {
+        calendarGrid.innerHTML += `<div class="calendar-day not-current-month">${prevLastDay - i + 1}</div>`;
+    }
+
+    // Preenche os dias do mês atual
+    for (let i = 1; i <= lastDay; i++) {
+        const diaData = escalaDoMes.dias && escalaDoMes.dias[i] ? escalaDoMes.dias[i] : {};
+
+        // Busca os nomes dos corretores
+        const nomeManha = await getCorretorNameById(diaData.manha);
+        const nomeTarde = await getCorretorNameById(diaData.tarde);
+        const nomeNoite = await getCorretorNameById(diaData.noite);
+
+        calendarGrid.innerHTML += `
+            <div class="calendar-day" data-day="${i}">
+                <div class="day-number">${i}</div>
+                <div class="shifts">
+                    ${nomeManha ? `<div class="shift manha">M: ${nomeManha}</div>` : ''}
+                    ${nomeTarde ? `<div class="shift tarde">T: ${nomeTarde}</div>` : ''}
+                    ${nomeNoite ? `<div class="shift noite">N: ${nomeNoite}</div>` : ''}
+                </div>
+            </div>
         `;
+    }
+    
+    // Adiciona event listener para cada dia do calendário
+    document.querySelectorAll('.calendar-day[data-day]').forEach(day => {
+        day.addEventListener('click', () => openEditModal(day.dataset.day));
     });
-    agentList.innerHTML = html;
-});
+}
 
-// Função para deletar um corretor
-function deleteAgent(id) {
-    if (confirm("Tem certeza que deseja excluir este corretor?")) {
-        db.collection('corretores').doc(id).delete()
-        .then(() => console.log("Corretor excluído."))
-        .catch(error => console.error("Erro ao excluir: ", error));
+// 2. Busca a escala do mês no Firebase
+async function getEscalaDoMes(year, month) {
+    const docId = `${year}-${String(month + 1).padStart(2, '0')}`;
+    const doc = await db.collection('escala').doc(docId).get();
+    return doc.exists ? doc.data() : {};
+}
+
+// 3. Busca o nome de um corretor pelo ID (com cache)
+async function getCorretorNameById(id) {
+    if (!id) return null;
+    if (corretoresCache[id]) return corretoresCache[id];
+    
+    try {
+        const doc = await db.collection('corretores').doc(id).get();
+        if (doc.exists) {
+            const nome = doc.data().nome.split(' ')[0]; // Pega só o primeiro nome
+            corretoresCache[id] = nome;
+            return nome;
+        }
+        return null;
+    } catch (error) {
+        console.error("Erro ao buscar corretor:", error);
+        return null;
     }
 }
 
+// 4. Abre o Modal de Edição
+async function openEditModal(day) {
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+    
+    document.getElementById('modal-title').innerText = `Editar Escala para ${day}/${month + 1}/${year}`;
+    document.getElementById('selected-day').value = day;
 
-// --- LÓGICA PARA MOSTRAR PLANTÃO (SIMPLIFICADA) ---
-// Esta é uma versão simples. A lógica real buscaria na coleção 'escala'
-// pela data de hoje.
-function carregarPlantao() {
-    // Exemplo: Buscar o primeiro corretor do Centro
-    db.collection('corretores').where('unidade', '==', 'Centro').limit(1).get().then(snapshot => {
-        if (!snapshot.empty) {
-            document.getElementById('corretor-centro').innerText = snapshot.docs[0].data().nome;
-        }
-    });
+    // Popula os selects com os corretores
+    const selectManha = document.getElementById('select-manha');
+    const selectTarde = document.getElementById('select-tarde');
+    const selectNoite = document.getElementById('select-noite');
 
-    // Exemplo: Buscar o primeiro corretor do Campeche
-    db.collection('corretores').where('unidade', '==', 'Campeche').limit(1).get().then(snapshot => {
-         if (!snapshot.empty) {
-            document.getElementById('corretor-campeche').innerText = snapshot.docs[0].data().nome;
-        }
+    const corretoresSnapshot = await db.collection('corretores').get();
+    let optionsHtml = '<option value="">Ninguém</option>';
+    corretoresSnapshot.forEach(doc => {
+        optionsHtml += `<option value="${doc.id}">${doc.data().nome}</option>`;
     });
+    selectManha.innerHTML = optionsHtml;
+    selectTarde.innerHTML = optionsHtml;
+    selectNoite.innerHTML = optionsHtml;
+
+    // Seleciona os corretores já escalados
+    const escalaDoMes = await getEscalaDoMes(year, month);
+    const diaData = escalaDoMes.dias && escalaDoMes.dias[day] ? escalaDoMes.dias[day] : {};
+    selectManha.value = diaData.manha || '';
+    selectTarde.value = diaData.tarde || '';
+    selectNoite.value = diaData.noite || '';
+
+    modal.style.display = 'block';
 }
 
-// Carrega o plantão quando a página abre
-document.addEventListener('DOMContentLoaded', carregarPlantao);
+// 5. Salva a escala no Firebase
+editScaleForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const day = document.getElementById('selected-day').value;
+    const manha = document.getElementById('select-manha').value;
+    const tarde = document.getElementById('select-tarde').value;
+    const noite = document.getElementById('select-noite').value;
+
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+    const docId = `${year}-${String(month + 1).padStart(2, '0')}`;
+    
+    const fieldPath = `dias.${day}`;
+
+    await db.collection('escala').doc(docId).set({
+        [fieldPath]: {
+            manha: manha,
+            tarde: tarde,
+            noite: noite
+        }
+    }, { merge: true }); // 'merge: true' garante que não vamos apagar os outros dias do mês
+
+    modal.style.display = 'none';
+    renderCalendar(); // Re-renderiza o calendário para mostrar a atualização
+});
+
+
+// --- EVENT LISTENERS ---
+prevMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+nextMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+window.addEventListener('click', (e) => {
+    if (e.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
+
+// --- INICIALIZAÇÃO ---
+document.addEventListener('DOMContentLoaded', renderCalendar);
