@@ -21,53 +21,22 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-#month-navigation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
+#month-navigation { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; }
 #month-navigation h2 { width: 250px; }
-
-#month-navigation button {
-    background: var(--amarelo-santailha);
-    color: var(--azul-santailha);
-    border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer;
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s;
-}
-
+#month-navigation button { background: var(--amarelo-santailha); color: var(--azul-santailha); border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
 #month-navigation button:hover { transform: scale(1.1); }
 
 main { padding: 2rem; max-width: 1600px; margin: auto; }
 
-#calendar-container {
-    background: var(--branco);
-    border: 1px solid var(--borda-suave);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    overflow: hidden;
-}
+#calendar-container { background: var(--branco); border: 1px solid var(--borda-suave); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; }
 
 .calendar-header, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
 .calendar-header div { font-weight: 600; color: var(--azul-santailha); padding: 1rem; text-align: center; border-bottom: 2px solid var(--borda-suave); }
 
-.calendar-day {
-    border-top: 1px solid var(--borda-suave);
-    border-left: 1px solid var(--borda-suave);
-    min-height: 150px;
-    padding: 0.5rem;
-    transition: background-color 0.3s;
-    cursor: pointer;
-}
+.calendar-day { border-top: 1px solid var(--borda-suave); border-left: 1px solid var(--borda-suave); min-height: 150px; padding: 0.5rem; transition: background-color 0.3s; cursor: pointer; }
 .calendar-day:hover { background-color: #f5f8ff; }
 .calendar-day.not-current-month { background-color: #fafafa; color: #ccc; cursor: default; }
-
 .day-number { font-weight: 500; margin-bottom: 0.5rem; }
-
 .shift-title { font-size: 0.8em; font-weight: bold; color: var(--azul-santailha); margin-top: 8px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
 .agent-list-day { list-style: none; padding-left: 0; font-size: 0.85em; }
 .agent-list-day li { padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -76,23 +45,34 @@ main { padding: 2rem; max-width: 1600px; margin: auto; }
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
 .modal-content { background-color: var(--branco); margin: 5vh auto; padding: 2rem; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
 .close-btn { color: #aaa; position: absolute; top: 1rem; right: 1.5rem; font-size: 1.8rem; font-weight: bold; cursor: pointer; }
-
 .shift-editor { margin-bottom: 1.5rem; border: 1px solid var(--borda-suave); padding: 1rem; border-radius: 8px; }
 .shift-editor h4 { margin-top: 0; color: var(--azul-santailha); }
-
-/* --- LINHAS ALTERADAS AQUI --- */
-.checkbox-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem; /* Aumenta o espaçamento vertical entre os nomes */
-}
-
+.checkbox-container { display: flex; flex-direction: column; gap: 0.8rem; }
 .checkbox-item { display: flex; align-items: center; }
-.checkbox-item input { margin-right: 0.5rem; transform: scale(1.2); } /* Aumenta um pouco o checkbox */
-.checkbox-item label { font-size: 1em; } /* Aumenta a fonte do nome */
+.checkbox-item input { margin-right: 0.5rem; transform: scale(1.2); }
+.checkbox-item label { font-size: 1em; }
+.form-actions { text-align: right; margin-top: 1.5rem; }
+.form-actions button { background-color: var(--amarelo-santailha); color: var(--azul-santailha); font-weight: bold; border: none; cursor: pointer; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 6px; }
 
-.form-actions { text-align: right; margin-top: 2rem; }
-.form-actions button {
-    background-color: var(--amarelo-santailha); color: var(--azul-santailha); font-weight: bold;
-    border: none; cursor: pointer; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 6px;
+/* --- ESTILOS DA NOVA SEÇÃO DE ADMINISTRAÇÃO --- */
+#management-section {
+    background: var(--branco);
+    border: 1px solid var(--borda-suave);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-top: 2rem;
+    padding: 1.5rem 2rem;
 }
+#management-section h2 { color: var(--azul-santailha); text-align: center; margin-bottom: 2rem; }
+.management-content { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+.form-container h3, .list-container h3 { color: var(--texto-principal); font-weight: 600; margin-bottom: 1.5rem; border-bottom: 2px solid var(--amarelo-santailha); padding-bottom: 0.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9em; }
+.form-group input { width: 100%; padding: 0.8rem; border: 1px solid var(--borda-suave); border-radius: 6px; font-size: 1rem; }
+#agent-list { list-style: none; max-height: 400px; overflow-y: auto; padding: 0; }
+#agent-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--borda-suave); }
+#agent-list .agent-info span { display: block; color: #555; }
+#agent-list .agent-name { font-weight: 500; color: var(--texto-principal); }
+#agent-list .agent-details { font-size: 0.85em; }
+#agent-list .delete-agent-btn { background: none; border: none; color: #f44336; cursor: pointer; font-size: 1.2rem; padding: 5px; }
+@media (max-width: 800px) { .management-content { grid-template-columns: 1fr; } }
