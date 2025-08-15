@@ -13,6 +13,11 @@ body {
     margin: 0;
 }
 
+.logo {
+    max-width: 200px; /* Defina a largura máxima que seu logo pode ter */
+    margin-bottom: 1rem; /* Cria um espaço entre o logo e o título */
+}
+
 header {
     background-color: var(--azul-santailha);
     color: var(--branco);
