@@ -31,6 +31,40 @@
             <div id="calendar-grid" class="calendar-grid">
                 </div>
         </div>
+
+        <section id="management-section">
+            <h2>Gerenciar Corretores</h2>
+            <div class="management-content">
+                <div class="form-container">
+                    <h3>Adicionar Novo Corretor</h3>
+                    <form id="add-agent-form">
+                        <div class="form-group">
+                            <label for="agent-name">Nome Completo</label>
+                            <input type="text" id="agent-name" placeholder="Ex: Carlos Andrade" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-email">Email</label>
+                            <input type="email" id="agent-email" placeholder="usado no CRM" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-unidade">Unidade</label>
+                            <select id="agent-unidade" required>
+                                <option value="Centro">Centro</option>
+                                <option value="Campeche">Campeche</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit">Adicionar Corretor</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="list-container">
+                    <h3>Corretores Cadastrados</h3>
+                    <ul id="agent-list">
+                        </ul>
+                </div>
+            </div>
+        </section>
     </main>
 
     <div id="edit-modal" class="modal">
