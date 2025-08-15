@@ -80,10 +80,16 @@ main { padding: 2rem; max-width: 1600px; margin: auto; }
 .shift-editor { margin-bottom: 1.5rem; border: 1px solid var(--borda-suave); padding: 1rem; border-radius: 8px; }
 .shift-editor h4 { margin-top: 0; color: var(--azul-santailha); }
 
-.checkbox-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; }
+/* --- LINHAS ALTERADAS AQUI --- */
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem; /* Aumenta o espaçamento vertical entre os nomes */
+}
+
 .checkbox-item { display: flex; align-items: center; }
-.checkbox-item input { margin-right: 0.5rem; }
-.checkbox-item label { font-size: 0.9em; }
+.checkbox-item input { margin-right: 0.5rem; transform: scale(1.2); } /* Aumenta um pouco o checkbox */
+.checkbox-item label { font-size: 1em; } /* Aumenta a fonte do nome */
 
 .form-actions { text-align: right; margin-top: 2rem; }
 .form-actions button {
