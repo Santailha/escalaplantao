@@ -22,7 +22,7 @@ header {
 }
 
 .logo {
-    width: 250pc;
+    width: 250px;
 }
 
 #month-navigation { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; }
